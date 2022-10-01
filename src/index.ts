@@ -1,11 +1,21 @@
 import { Server } from "socket.io";
 import express from "express";
+import cors from "cors";
 
-const io = new Server();
-const app = express();
+const socket = new Server({
+  cors: {
+    origin: "*",
+  },
+});
 
-app.get("/", (req, res) => res.json({ ok: true }));
+const http = express();
 
-io.on("connection", () => console.log("connection"));
+http.use(cors());
+http.get("/", (req, res) => res.json({ ok: true }));
 
-app.listen(3010, "127.0.0.1");
+socket.on("connection", (s) => {
+  s.on("room:create", () => console.log("room:create"));
+});
+
+http.listen(3010);
+socket.listen(3015);
