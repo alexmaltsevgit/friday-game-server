@@ -2,6 +2,9 @@ import { Server } from "socket.io";
 import express from "express";
 import cors from "cors";
 
+import { AllCommands } from "./types";
+import { endpoints } from "./endpoints";
+
 const socket = new Server({
   cors: {
     origin: "*",
@@ -14,7 +17,12 @@ http.use(cors());
 http.get("/", (req, res) => res.json({ ok: true }));
 
 socket.on("connection", (s) => {
-  s.on("room:create", () => console.log("room:create"));
+  Object.values(AllCommands).forEach((command) => {
+    if (endpoints[command]) {
+      // @ts-ignore
+      s.on(command, endpoints[command]);
+    }
+  });
 });
 
 http.listen(3010);
