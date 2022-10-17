@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Room {
-  id Int @id
+  id String @id
   status String
   players Player[]
 }
@@ -25,5 +25,5 @@ model Player {
   opened_at DateTime?
 
   room Room @relation(fields: [room_id], references: [id])
-  room_id Int
+  room_id String
 }
