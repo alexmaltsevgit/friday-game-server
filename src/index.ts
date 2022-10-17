@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 
 import { AllCommands } from "./types";
-import { endpoints } from "./endpoints";
+import { createEndpoints } from "./controllers";
 
 const socket = new Server({
   cors: {
@@ -17,6 +17,8 @@ http.use(cors());
 http.get("/", (req, res) => res.json({ ok: true }));
 
 socket.on("connection", (s) => {
+  const endpoints = createEndpoints(s);
+
   Object.values(AllCommands).forEach((command) => {
     if (endpoints[command]) {
       // @ts-ignore
