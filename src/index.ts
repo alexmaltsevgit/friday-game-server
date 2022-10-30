@@ -1,31 +1,22 @@
-import { Server } from "socket.io";
 import express from "express";
 import cors from "cors";
-
-import { AllCommands } from "./types";
-import { createEndpoints } from "./controllers";
-
-const socket = new Server({
-  cors: {
-    origin: "*",
-  },
-});
+import { Server } from "colyseus";
+import { WebSocketTransport } from "@colyseus/ws-transport";
+import { createServer } from "http";
+import { GameRoom } from "./socket/Room";
 
 const http = express();
-
 http.use(cors());
 http.get("/", (req, res) => res.json({ ok: true }));
 
-socket.on("connection", (s) => {
-  const endpoints = createEndpoints(s);
-
-  Object.values(AllCommands).forEach((command) => {
-    if (endpoints[command]) {
-      // @ts-ignore
-      s.on(command, endpoints[command]);
-    }
-  });
+const socket = new Server({
+  transport: new WebSocketTransport({ server: createServer() }),
+  greet: false,
 });
+
+if (process.env.NODE_ENV !== "production") socket.simulateLatency(200);
+
+socket.define("game", GameRoom);
 
 http.listen(3010);
 socket.listen(3015);
