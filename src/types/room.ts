@@ -1,4 +1,4 @@
-export enum RoomStatus {
+export enum RoomStage {
   Awaiting = "awaiting",
   FictionNaming = "fiction-naming",
   Guessing = "guessing",

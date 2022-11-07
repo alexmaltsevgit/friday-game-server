@@ -1,35 +1,17 @@
 import { Client, Room } from "colyseus";
-import { MapSchema, Schema, type } from "@colyseus/schema";
 
-import { RoomStatus } from "../types";
-
-type Player = {
-  realName?: string;
-  fictionName?: string;
-};
-
-class PlayerState extends Schema {
-  @type("string") realName?: string;
-  @type("string") fictionName?: string;
-
-  constructor({ realName, fictionName }: Player) {
-    super();
-
-    this.realName = realName;
-    this.fictionName = fictionName;
-  }
-}
-
-class GameState extends Schema {
-  @type("string") ownerId?: string;
-  @type("string") status: RoomStatus = RoomStatus.Awaiting;
-  @type({ map: PlayerState }) players = new MapSchema<PlayerState>();
-}
+import { GameState, Player, PlayerState } from "./state";
+import { messageDispatcher } from "./messageDispatcher";
+import { MessageType } from "../types";
 
 export class GameRoom extends Room<GameState> {
   onCreate(options: any) {
     this.setPrivate(true);
     this.setState(new GameState());
+
+    this.onMessage("*", (client, type, options) =>
+      messageDispatcher[type as MessageType]?.(this, client, options)
+    );
   }
 
   onJoin(client: Client, options: Player) {
