@@ -10,6 +10,7 @@ export type Player = {
 export class PlayerState extends Schema {
   @type("string") realName?: string;
   @type("string") fictionName?: string;
+  @type("boolean") guessed: boolean = false;
 
   constructor({ realName, fictionName }: Player) {
     super();
