@@ -1,7 +1,7 @@
 import { Client, Room } from "colyseus";
 
 import { MessageType } from "../types";
-import { GameState } from "./state";
+import { GameState, PlayerState } from "./state";
 
 export const messageDispatcher: Record<
   MessageType,
@@ -15,5 +15,19 @@ export const messageDispatcher: Record<
     if (!player) return;
 
     player.fictionName = payload.newFictionName;
+  },
+
+  [MessageType.DeclareMyselfWinner]: (room, client) => {
+    const player = room.state.players.get(client.sessionId);
+    if (!player) return;
+
+    const winnersCount = Object.values(room.state.players.toJSON()).filter(
+      (player) => (player as PlayerState).isWinner
+    ).length;
+
+    const anotherWinnerNumber = winnersCount + 1;
+
+    player.isWinner = true;
+    player.winnerNumber = anotherWinnerNumber;
   },
 };
