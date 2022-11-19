@@ -24,5 +24,6 @@ export class PlayerState extends Schema {
 export class GameState extends Schema {
   @type("string") ownerId?: string;
   @type("string") stage: RoomStage = RoomStage.Awaiting;
+  @type("number") winnersCount: number = 0;
   @type({ map: PlayerState }) players = new MapSchema<PlayerState>();
 }
